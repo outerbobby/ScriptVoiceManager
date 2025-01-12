@@ -26,6 +26,7 @@ export default function AddCustomerDialog({ open, onOpenChange }: AddCustomerDia
     defaultValues: {
       name: "",
       notes: "",
+      comments: "",
       template: "Corporate"
     }
   });
@@ -61,7 +62,7 @@ export default function AddCustomerDialog({ open, onOpenChange }: AddCustomerDia
                 </FormItem>
               )}
             />
-            
+
             <FormField
               control={form.control}
               name="notes"
@@ -71,6 +72,23 @@ export default function AddCustomerDialog({ open, onOpenChange }: AddCustomerDia
                   <FormControl>
                     <Textarea
                       placeholder="Add any relevant notes..."
+                      className="resize-none"
+                      {...field}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="comments"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Comments</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Optional additional comments..."
                       className="resize-none"
                       {...field}
                     />

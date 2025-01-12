@@ -7,6 +7,7 @@ export interface Customer {
   voiceActorNotes?: string;
   qcStatus?: 'pending' | 'approved' | 'rejected';
   flowMap?: string;
+  comments?: string; // New field
 }
 
 export const mockCustomers: Customer[] = [
@@ -18,7 +19,8 @@ export const mockCustomers: Customer[] = [
     scriptContent: 'Welcome to Acme Corp...',
     voiceActorNotes: 'Deep professional voice required',
     qcStatus: 'approved',
-    flowMap: 'Initial greeting -> Menu options -> Department routing'
+    flowMap: 'Initial greeting -> Menu options -> Department routing',
+    comments: 'Important client with high contract value.'
   },
   {
     id: '2',
@@ -28,13 +30,14 @@ export const mockCustomers: Customer[] = [
     scriptContent: 'Hey there! Thanks for reaching out...',
     voiceActorNotes: 'Energetic and friendly tone',
     qcStatus: 'pending',
-    flowMap: 'Greeting -> Product info -> Support'
+    flowMap: 'Greeting -> Product info -> Support',
+    comments: 'Might need updates after Q2.'
   }
 ];
 
 export function searchCustomers(query: string): Customer[] {
   const lowercaseQuery = query.toLowerCase();
-  return mockCustomers.filter(customer => 
+  return mockCustomers.filter(customer =>
     customer.name.toLowerCase().includes(lowercaseQuery) ||
     customer.notes.toLowerCase().includes(lowercaseQuery)
   );

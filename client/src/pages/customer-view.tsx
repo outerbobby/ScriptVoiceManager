@@ -1,17 +1,32 @@
 import { useRoute } from "wouter";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { getCustomerById } from "@/lib/mock-data";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
+import ScriptBuilderTab from "@/components/tabs/script-builder-tab";
+import VoiceActorTab from "@/components/tabs/voice-actor-tab";
+import QualityControlTab from "@/components/tabs/quality-control-tab";
+import FlowTrainingTab from "@/components/tabs/flow-training-tab";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function CustomerView() {
   const [, params] = useRoute("/customer/:id");
   const { toast } = useToast();
-  
   const customer = getCustomerById(params?.id || "");
+  const [openInfo, setOpenInfo] = React.useState(false);
 
   if (!customer) {
     toast({
@@ -25,16 +40,55 @@ export default function CustomerView() {
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="container mx-auto">
-        <div className="flex items-center gap-4 mb-6">
-          <Link to="/">
-            <Button variant="ghost" size="icon">
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-          </Link>
-          <h1 className="text-2xl font-bold">{customer.name}</h1>
+        {/* Header Row */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-4">
+            <Link href="/">
+              <Button variant="ghost" size="icon">
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+            </Link>
+            <h1 className="text-2xl font-bold">{customer.name}</h1>
+          </div>
+          <div>
+            <Select>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Apply Template" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Corporate">Corporate</SelectItem>
+                <SelectItem value="Startup">Startup</SelectItem>
+                <SelectItem value="Enterprise">Enterprise</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
-        <Tabs defaultValue="script" className="w-full">
+        {/* Collapsible Info */}
+        <Collapsible open={openInfo} onOpenChange={setOpenInfo}>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold">Client Info</h2>
+            <CollapsibleTrigger
+              className={buttonVariants({ variant: "outline" })}
+            >
+              {openInfo ? "Hide Info" : "Show Info"}
+            </CollapsibleTrigger>
+          </div>
+          <CollapsibleContent>
+            <Card className="mb-4">
+              <CardHeader>
+                <CardTitle>Basic Details</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p><strong>Notes:</strong> {customer.notes}</p>
+                <p className="mt-2"><strong>Comments:</strong> {customer.comments || "No comments"}</p>
+              </CardContent>
+            </Card>
+          </CollapsibleContent>
+        </Collapsible>
+
+        {/* Tabs */}
+        <Tabs defaultValue="script">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="script">Script Builder</TabsTrigger>
             <TabsTrigger value="voice">Voice Actor</TabsTrigger>
@@ -43,67 +97,16 @@ export default function CustomerView() {
           </TabsList>
 
           <TabsContent value="script">
-            <Card>
-              <CardHeader>
-                <CardTitle>Script Builder</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <textarea
-                  className="w-full min-h-[300px] p-4 rounded-md border"
-                  defaultValue={customer.scriptContent}
-                />
-              </CardContent>
-            </Card>
+            <ScriptBuilderTab />
           </TabsContent>
-
           <TabsContent value="voice">
-            <Card>
-              <CardHeader>
-                <CardTitle>Voice Actor Notes</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <textarea
-                  className="w-full min-h-[300px] p-4 rounded-md border"
-                  defaultValue={customer.voiceActorNotes}
-                />
-              </CardContent>
-            </Card>
+            <VoiceActorTab />
           </TabsContent>
-
           <TabsContent value="qc">
-            <Card>
-              <CardHeader>
-                <CardTitle>Quality Control Status</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex gap-4">
-                  <Button
-                    variant={customer.qcStatus === 'approved' ? 'default' : 'outline'}
-                  >
-                    Approve
-                  </Button>
-                  <Button
-                    variant={customer.qcStatus === 'rejected' ? 'destructive' : 'outline'}
-                  >
-                    Reject
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+            <QualityControlTab />
           </TabsContent>
-
           <TabsContent value="flow">
-            <Card>
-              <CardHeader>
-                <CardTitle>Flow Training Map</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <textarea
-                  className="w-full min-h-[300px] p-4 rounded-md border"
-                  defaultValue={customer.flowMap}
-                />
-              </CardContent>
-            </Card>
+            <FlowTrainingTab />
           </TabsContent>
         </Tabs>
       </div>
